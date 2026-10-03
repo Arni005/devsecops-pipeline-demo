@@ -1,0 +1,23 @@
+default_language_version:
+  python: python3.12
+
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.4
+    hooks:
+      - id: gitleaks
+
+  - repo: https://github.com/semgrep/pre-commit
+    rev: v1.95.0
+    hooks:
+      - id: semgrep
+        args: ['--config', 'p/default', '--error', '--severity', 'ERROR']
+        additional_dependencies: ['setuptools<81']
+
+  - repo: https://github.com/bridgecrewio/checkov
+    rev: 3.2.255
+    hooks:
+      - id: checkov
+        args: ['-d', 'infra/', '--quiet']
+        pass_filenames: false
+
