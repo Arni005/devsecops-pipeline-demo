@@ -1,19 +1,23 @@
-import subprocess
+import os
+import socket
 from flask import Flask, request
 
 app = Flask(__name__)
+
 
 @app.route("/")
 def home():
     return "Hello DevSecOps"
 
-@app.route("/ping")
-def ping():
+
+@app.route("/resolve")
+def resolve():
     host = request.args.get("host", "localhost")
-    # INTENTIONAL FLAW: command injection (shell=True with user input)
-    out = subprocess.check_output(f"ping -c 1 {host}", shell=True)
-    return out
+    try:
+        return socket.gethostbyname(host)
+    except socket.gaierror:
+        return "unknown host", 404
+
 
 if __name__ == "__main__":
-    # INTENTIONAL FLAW: debug on, binds to all interfaces
-    app.run(host="0.0.0.0", debug=True)
+    app.run(host=os.environ.get("APP_HOST", "127.0.0.1"), port=5000, debug=False)
